@@ -1,7 +1,6 @@
 // navigationItems.js
 const reDirects = [
     { label: "Websites", href: "https://votonx.com/", subpages: ["/Votonx", "/Magnetic Miles LLC"], href2: "https://magneticmilesllc.com/" },
-    { label: "Claim", href: "/Claim ", subpages: ["/"] },
     { label: "Buy VOTG NFT", href: "https://opensea.io/collection/votonx-generation", subpages: ["/"] },
     { label: "Swap", href: "/Swap", subpages: ["/"] },
     { label: "Chart", href: "/Chart", subpages: ["/"] },
