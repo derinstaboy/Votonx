@@ -81,12 +81,12 @@ export default function SwapFull() {
     );
 
     const vtnxMaticPath = [
-        "0x3d1b34db20dd01A5e744Fb44a086b34c963aB7De",
+        "0xf8D9CB7D8ce7d7bEdd8cEACF087f7adF1C9937Ad",
         "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
     ];
 
     const maticVtnxPath = [
-        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+        "0xf8D9CB7D8ce7d7bEdd8cEACF087f7adF1C9937Ad",
         "0x3d1b34db20dd01A5e744Fb44a086b34c963aB7De",
     ];
 
