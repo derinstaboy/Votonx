@@ -87,24 +87,6 @@ const Home: NextPage = () => {
           transition="transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)" // Add cubic bezier transition
         >
           <VStack>
-            <Image src="/VOTG.png" h="50" w="50" />
-
-            <Heading textColor="white" fontSize={"xl"}>
-              Claim VOTG NFT Rewards            </Heading>
-            <Button as={Link} href="/Claim">
-              Claim Now
-            </Button>
-          </VStack>
-        </Box>
-
-        <Box h={175} w={175} m="auto" _hover={{
-          boxShadow: "2xl",
-          transform: "scale(1.1)", // Apply scaling on hover
-          transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
-        }}
-          transition="transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)" // Add cubic bezier transition
-        >
-          <VStack>
             <Image src="/VTNX.png" h="50" w="50" />
 
             <Heading textColor="white" fontSize={"xl"}>
