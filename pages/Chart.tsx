@@ -49,8 +49,8 @@ const Chart: NextPage = () => {
             justifyContent={"center"}
         >
 
-            <VStack display={{ base: "none", lg: "flex" }}><iframe src="https://dexscreener.com/polygon/0xd639DEEC02d09D18C28DC5DdC7F91a348e3dCEA7?embed=1&theme=dark" height={"600px"} width="750px"></iframe></VStack>
-            <VStack display={{ base: "flex", lg: "none" }} mt={10}><iframe src="https://dexscreener.com/polygon/0xd639DEEC02d09D18C28DC5DdC7F91a348e3dCEA7?embed=1&theme=dark" height={"600px"} width="350px"></iframe></VStack>        </Box>
+            <VStack display={{ base: "none", lg: "flex" }}><iframe src="https://dexscreener.com/polygon/0xf8D9CB7D8ce7d7bEdd8cEACF087f7adF1C9937Ad?embed=1&theme=dark" height={"600px"} width="750px"></iframe></VStack>
+            <VStack display={{ base: "flex", lg: "none" }} mt={10}><iframe src="https://dexscreener.com/polygon/0xf8D9CB7D8ce7d7bEdd8cEACF087f7adF1C9937Ad?embed=1&theme=dark" height={"600px"} width="350px"></iframe></VStack>        </Box>
     );
 };
 export default Chart;
