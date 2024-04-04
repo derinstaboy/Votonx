@@ -1,0 +1,68 @@
+html,
+body {
+  color: rgb(150, 74, 19);
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: #7dd3fc;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+body {
+  color: #3c9e9e;
+  background: #b0273b;
+}
+
+.cow {
+  background-color: aqua !important;
+  width: fit-content !important;
+  color: navy !important;
+}
+
+.my-connect-button {
+  background-image: linear-gradient(to right, #3A7BD5, #3A6073);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.my-connect-button:hover {
+  background-image: linear-gradient(to right, #FEC163, #DE4313);
+}
+
+.my-connect-button:active {
+  background-image: linear-gradient(to right, #4B4B4B, #2B2B2B);
+}
+
+
+
+.connect-wallet-button {
+  background-image: linear-gradient(to right, #4299e1, #6b46c1) !important;
+  border: none !important;
+  color: #fff !important;
+  padding: 10px 20px !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  font-size: 16px !important;
+  transition: background-image 0.3s ease-out !important;
+}
+
+.connect-wallet-button:hover {
+  background-image: linear-gradient(to right, #6b46c1, #4299e1) !important;
+}
+
