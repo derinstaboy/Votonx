@@ -72,7 +72,7 @@ const Home: NextPage = () => {
             <Image src="/VTNX.png" h="50" w="50" />
 
             <Heading textColor="white" fontSize={"xl"}>
-              Get $VTNX for your $MATIC!            </Heading>
+              Buy $VTNX Tokens            </Heading>
             <Button as={Link} href="/Swap">
               Swap Now
             </Button>
