@@ -1,113 +1,172 @@
 import {
-    Box, Button, Flex, Heading, Image, Input, Spinner, Text, VStack, useToast, useColorModeValue
+    Box,
+    HStack,
+    Text,
+    VStack,
+    Image,
+    useToast,
+    Button,
+    Spinner,
+    Flex,
+    Heading,
+    Input,
+    useColorModeValue,
 } from "@chakra-ui/react";
 import SwapInput from "./SwapInput";
-import { useState, useEffect } from "react";
+import {
+    toWei,
+    useAddress,
+    useBalance,
+    useContract,
+    useContractRead,
+    useContractWrite,
+    useTokenBalance,
+} from "@thirdweb-dev/react";
+
+import { useState } from "react";
+import { Cronos, Polygon } from "@thirdweb-dev/chains";
 import { ethers } from "ethers";
 import {
-    useAddress, useBalance, useContract, useContractRead, useContractWrite, useTokenBalance
-} from "@thirdweb-dev/react";
-import { Polygon } from "@thirdweb-dev/chains";
-import { VTNX_DEX_CONTRACT, VTNX_TOKEN, WMATIC_AD, USDC_AD } from "../../Consts/Addresses";
+    NULL_AD,
+    VTNX_DEX_CONTRACT,
+    VTNX_TOKEN,
+    WMATIC_AD,
+    USDC_AD,
+} from "../../Consts/Addresses";
 import VTNX_DEX_ABI from "../../Consts/ABIS/VTNXDex.json";
 import VTNX_ABI from "../../Consts/ABIS/VTNXToken.json";
+import WMATIC_ABI from "../../Consts/ABIS/WrappedToken.json";
 import WalletButton from "../Nav/ConnectWalletButton";
+
 
 export default function SwapFull() {
     const toast = useToast();
     const address = useAddress();
-    const { contract: dexContract } = useContract(VTNX_DEX_CONTRACT, VTNX_DEX_ABI);
-    const { data: nativeBalance } = useBalance();
-    const { contract: tokenContract } = useContract(VTNX_TOKEN, VTNX_ABI);
-    const { data: tokenBalance } = useTokenBalance(tokenContract, address);
 
-    const [fromToken, setFromToken] = useState(WMATIC_AD); 
-    const [toToken, setToToken] = useState(VTNX_TOKEN);
-    const [amount, setAmount] = useState('0');
-    const [outputAmount, setOutputAmount] = useState('0');
-    const [isApproved, setIsApproved] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const { contract: dexContract } = useContract(VTNX_DEX_CONTRACT, VTNX_DEX_ABI);
+    const { data: nativeBalance, refetch: refetchNativeBalance } = useBalance();
+
+    const { contract: tokenContract } = useContract(VTNX_TOKEN, VTNX_ABI);
+    const { data: tokenBalance, refetch: refetchTokenBalance } = useTokenBalance(tokenContract, address);
+
+    const ACTIVE_CHAIN = Polygon;
+    const vtnxAddress = VTNX_TOKEN;
+    const nullAddress = NULL_AD;
+    const nativeAddress = WMATIC_AD;
+    const { data: symbol } = useContractRead(tokenContract, "symbol");
+    const { data: taxFees } = useContractRead(tokenContract, "percentage");
+
+    const { data: feePercent } = useContractRead(dexContract, "feePercent");
+
+    const [amount, setAmount] = useState("");
+    const [nativeValue, setNativeValue] = useState<string>("0");
+    const [tokenValue, setTokenValue] = useState<string>("0");
+    const [currentFrom, setCurrentFrom] = useState<string>("native");
+    const [loading, setLoading] = useState<boolean>(false);
+    const [tokenA, setTokenA] = useState<string>("0");
+    const [tokenB, setTokenB] = useState<string>("0");
+    const fee = Number(feePercent ? (feePercent / 100) : 100)
+    const taxPercent = taxFees / 100 //6
+    const taxMultiplier = (100 - taxPercent) / 100
+    const percentToSwapAfterFee = 100 - fee
+
+    const { mutateAsync: swapTokens } = useContractWrite(
+        dexContract,
+        "swapTokens"
+    );
+
+    const { mutateAsync: approveTokenSpending } = useContractWrite(
+        tokenContract,
+        "approve"
+    );
+
+    const vtnxMaticPath = [
+        "0xf8D9CB7D8ce7d7bEdd8cEACF087f7adF1C9937Ad",
+        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    ];
+
+    const maticVtnxPath = [
+        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+        "0xf8D9CB7D8ce7d7bEdd8cEACF087f7adF1C9937Ad",
+    ];
+
+    const multiRouteMiddle = [
+        WMATIC_AD,
+        USDC_AD,
+    ];
+
+    const matic = nativeValue ? nativeValue : 0;
+    const VTNX = tokenValue ? tokenValue : 0;
+
+    const VTNXSwap = tokenValue ? Number(tokenValue) * taxMultiplier : 0;
+
+    const vtnxSwapArg = VTNXSwap?.toString()
+    const { mutateAsync: approveTokens, isLoading } = useContractWrite(
+        dexContract,
+        "approveTokens"
+    );
 
     const {
-    data: getOutputTokenAmountMaticToVTNX,
-    isLoading: isLoadinggetOutputTokenAmountMaticToVTNX,
-} = useContractRead(dexContract, "getOutputTokenAmount", [
-    ethers.utils.parseUnits(amount, 18),
-    maticVtnxPath,
-]);
+        data: getOutputTokenAmountMaticToVTNX,
+        isLoading: isLoadinggetOutputTokenAmountMaticToVTNX,
+    } = useContractRead(dexContract, "getOutputTokenAmount", [
+        ethers.utils.parseUnits(matic.toString(), 18),
+        maticVtnxPath,
+    ]);
 
+    const {
+        data: getOutputTokenAmountVTNXtoMatic,
+        isLoading: isLoadinggetOutputTokenAmountVTNXtoMatic,
+    } = useContractRead(dexContract, "getOutputTokenAmount", [
+        ethers.utils.parseUnits(VTNX.toString(), 18),
+        vtnxMaticPath,
+    ]);
 
-    // Fetch output token amount
-    const fetchOutputAmount = async () => {
-        if (fromToken === WMATIC_AD) {
-            const maticVtnxPath = [WMATIC_AD, VTNX_TOKEN];
-            const amountInWei = ethers.utils.parseUnits(amount, 18);
-            const amountsOut = await dexContract.call("getOutputTokenAmount", [amountInWei, maticVtnxPath]);
-            setOutputAmount(ethers.utils.formatUnits(amountsOut[amountsOut.length - 1], 18));
-        } else {
-            const vtnxMaticPath = [VTNX_TOKEN, WMATIC_AD];
-            const amountInWei = ethers.utils.parseUnits(amount, 18);
-            const amountsOut = await dexContract.call("getOutputTokenAmount", [amountInWei, vtnxMaticPath]);
-            setOutputAmount(ethers.utils.formatUnits(amountsOut[amountsOut.length - 1], 18));
-        }
-    };
-
-    useEffect(() => {
-        if(amount !== '0') {
-            fetchOutputAmount();
-        }
-    }, [amount, fromToken, toToken]);
-
-    // Check token allowance
-    const checkTokenAllowance = async () => {
-        if (fromToken === VTNX_TOKEN) {
-            const allowance = await tokenContract.call("allowance", [address, VTNX_DEX_CONTRACT]);
-            return ethers.utils.formatUnits(allowance, 18) >= amount;
-        }
-        return true;
-    };
-
-    // Handle token approval
-    const handleApproval = async () => {
-        setLoading(true);
-        try {
-            const amountInWei = ethers.utils.parseUnits(amount, 18);
-            await tokenContract.functions.approve(VTNX_DEX_CONTRACT, amountInWei);
-            setIsApproved(true);
-            toast({ title: "Approval Successful", description: "Token spending approved.", status: "success" });
-        } catch (error) {
-            toast({ title: "Approval Failed", description: error.message, status: "error" });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Execute swap
     const executeSwap = async () => {
         setLoading(true);
+        const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
         try {
-            const isApproved = await checkTokenAllowance();
-            if (!isApproved) {
-                await handleApproval();
+            if (currentFrom === "native") {
+                await swapTokens({
+                    args: [nullAddress, vtnxAddress, toWei(nativeValue)],
+                    overrides: { value: toWei(nativeValue) },
+                });
+                toast({
+                    status: "success",
+                    title: "Swap Successful",
+                    description: `You have successfully swapped your ${ACTIVE_CHAIN.nativeCurrency.symbol
+                        } to ${symbol || "tokens"}.`,
+                });
+                setLoading(false);
+            } else {
+                await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
+                await swapTokens({
+                    args: [vtnxAddress, nullAddress, toWei(tokenValue)],
+                    overrides: {gasPrice: gasPrice},
+                });
+                toast({
+                    status: "success",
+                    title: "Swap Successful",
+                    description: `You have successfully swapped your ${symbol || "tokens"
+                        } to ${ACTIVE_CHAIN.nativeCurrency.symbol}.`,
+                });
             }
-            const amountInWei = ethers.utils.parseUnits(amount, 18);
-            const swapArgs = {
-                args: [fromToken, toToken, amountInWei],
-                overrides: {}
-            };
-            if (fromToken === WMATIC_AD) {
-                swapArgs.overrides = { value: amountInWei };
-            }
-            await dexContract.functions.swapTokens(swapArgs);
-            toast({ title: "Swap Successful", description: "Tokens swapped successfully.", status: "success" });
-        } catch (error) {
-            toast({ title: "Swap Failed", description: error.message, status: "error" });
-        } finally {
             setLoading(false);
+        } catch (err) {
+            console.error(err);
+            toast({
+                status: "error",
+                title: "Swap Failed",
+                description:
+                    "There was an error performing the swap. Please try again.",
+            });
+            setLoading(false);
+        } finally {
+            refetchNativeBalance()
+            refetchTokenBalance()
+            setLoading(false); // Set loading to false regardless of success or error
         }
     };
-
-
 
     const resetInputValues = () => {
         setNativeValue("0");
@@ -115,7 +174,7 @@ export default function SwapFull() {
     };
 
 
-    const amountToSwap = Number(currentFrom === "native" ? nativeValue : tokenValue); // Updated line
+    const amountToSwap = (Number(currentFrom === "native" ? nativeValue : tokenValue) / 100) * percentToSwapAfterFee
 
     const bottomBoxOutput =
         currentFrom === "native"
@@ -160,8 +219,8 @@ export default function SwapFull() {
             <VStack textAlign="center">
 <Text justifyContent={"center"} m="auto" textAlign={"center"} alignContent={"center"}>MATIC to VTNX swap function only at this time. </Text>
 
-                
-                <Text>You will receive approx <Text textColor="white">{Number(bottomBoxOutput)} {currentFrom === "native" ? "VTNX" : "MATIC"}</Text>
+                <Text fontSize={"md"} textAlign="center">Tax Fee: {taxPercent?.toString()}% Fee</Text>
+                <Text>You will receive approx <Text textColor="white">{Number(bottomBoxOutput) * taxMultiplier} {currentFrom === "native" ? "VTNX" : "MATIC"}</Text> after taxes
                 </Text>
             </VStack>
             <Flex
@@ -190,7 +249,7 @@ export default function SwapFull() {
                         type="token"
                         display=""
                         max={nativeBalance?.displayValue}
-                        value={outputAmount}
+                        value={(Number(bottomBoxOutput) * taxMultiplier).toString()}
                         placeholder={currentFrom === "token" ? (Number(bottomBoxOutput) * taxMultiplier).toString() : "0"}
                         placeholder2={(Number(bottomBoxOutput) * taxMultiplier).toString()}
                         setValue={setNativeValue}
@@ -233,7 +292,7 @@ export default function SwapFull() {
                         current={currentFrom}
                         type="native"
                         max={tokenBalance?.displayValue}
-                        value={outputAmount}
+                        value={(Number(bottomBoxOutput) * taxMultiplier).toString()}
                         setValue={setTokenValue}
                         tokenImage={"/Logo.png"}
                         placeholder={currentFrom === "native" ? (Number(bottomBoxOutput) * taxMultiplier).toString() : "0"}
@@ -242,13 +301,17 @@ export default function SwapFull() {
                     />
                 )}
             </Flex>
-            {address && !isApproved ? (
-                <Button onClick={handleApproval} disabled={loading}>
-                    {loading ? <Spinner /> : "Approve Tokens"}
-                </Button>
-            ) : null}
-            {address && isApproved ? (
-                <Button onClick={executeSwap} disabled={loading}>
+            {address ? (
+                <Button
+                    onClick={executeSwap}
+                    py="7"
+                    fontSize="2xl"
+                    rounded="xl"
+                    isDisabled={loading}
+                    boxShadow="2xl"
+                    bg={useColorModeValue("pt1", "pt4")}
+                    variant={"primary"}
+                >
                     {loading ? <Spinner /> : "Execute Swap"}
                 </Button>
             ) : (
