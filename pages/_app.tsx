@@ -33,7 +33,7 @@ const storage = new ThirdwebStorage({ uploader, gatewayUrls });
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThirdwebProvider
-      clientId={process.env.TW_CLIENT_ID}
+      clientId="e16649e68aa11a9b63e484526019120a"
       supportedWallets={[
         metamaskWallet(),
         trustWallet(),
