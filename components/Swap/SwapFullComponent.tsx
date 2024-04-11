@@ -218,11 +218,10 @@ export default function SwapFull() {
         });
     }, [address, tokenValue, tokenContract]);
 
-
-
     const executeSwap = async () => {
-
-       setLoading(true);
+    setLoading(true);
+    
+    try {
         const isTokenApproved = await checkTokenAllowance();
         if (!isTokenApproved) {
             toast({
@@ -230,55 +229,39 @@ export default function SwapFull() {
                 description: "Please approve token spending before swapping.",
                 status: "warning",
             });
-            setLoading(false);
             return;
         }
-        
-        const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
-        try {
-            if (currentFrom === "native") {
-                await swapTokens({
-                    args: [nullAddress, vtnxAddress, toWei(nativeValue)],
-                    overrides: { value: toWei(nativeValue) },
-                });
-                toast({
-                    status: "success",
-                    title: "Swap Successful",
-                    description: `You have successfully swapped your ${ACTIVE_CHAIN.nativeCurrency.symbol
-                        } to ${symbol || "tokens"}.`,
-                });
-                setLoading(false);
-            } else {
-                await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
-                await swapTokens({
-                    args: [vtnxAddress, nullAddress, toWei(tokenValue)],
-                    overrides: {gasPrice: gasPrice},
-                });
-                toast({
-                    status: "success",
-                    title: "Swap Successful",
-                    description: `You have successfully swapped your ${symbol || "tokens"
-                        } to ${ACTIVE_CHAIN.nativeCurrency.symbol}.`,
-                });
-            }
-            setLoading(false);
-        } catch (err) {
-            console.error(err);
-            toast({
-                status: "error",
-                title: "Swap Failed",
-                description:
-                    "There was an error performing the swap. Please try again.",
-            });
-            setLoading(false);
-        } finally {
-            setIsApproved(false); // Reset approval status after swap
-            setLoading(false);
-            refetchNativeBalance()
-            refetchTokenBalance()
-            setLoading(false); // Set loading to false regardless of success or error
-        }
-    };
+
+        const swapArguments = currentFrom === "native" ?
+            [nullAddress, vtnxAddress, toWei(nativeValue), maticVtnxPath] : // Assuming swap path for native to token
+            [vtnxAddress, nullAddress, toWei(tokenValue), vtnxMaticPath];  // Assuming swap path for token to native
+
+        const overrides = currentFrom === "native" ?
+            { value: toWei(nativeValue) } :
+            { gasPrice: ethers.utils.parseUnits("5000", "gwei") }; // Adjusted gas price
+
+        await swapTokens({ args: swapArguments, overrides });
+
+        toast({
+            status: "success",
+            title: "Swap Successful",
+            description: `You have successfully swapped your ${currentFrom === "native" ? ACTIVE_CHAIN.nativeCurrency.symbol : symbol || "tokens"} to ${currentFrom === "native" ? symbol || "tokens" : ACTIVE_CHAIN.nativeCurrency.symbol}.`,
+        });
+    } catch (err) {
+        console.error(err);
+        toast({
+            status: "error",
+            title: "Swap Failed",
+            description: "There was an error performing the swap. Please try again.",
+        });
+    } finally {
+        setIsApproved(false);
+        refetchNativeBalance();
+        refetchTokenBalance();
+        setLoading(false);
+    }
+};
+
 
     const resetInputValues = () => {
         setNativeValue("0");
