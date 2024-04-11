@@ -32,9 +32,10 @@ export default function SwapFull() {
     data: getOutputTokenAmountMaticToVTNX,
     isLoading: isLoadinggetOutputTokenAmountMaticToVTNX,
 } = useContractRead(dexContract, "getOutputTokenAmount", [
-    ethers.utils.parseUnits(matic.toString(), 18),
+    ethers.utils.parseUnits(amount, 18),
     maticVtnxPath,
 ]);
+
 
     // Fetch output token amount
     const fetchOutputAmount = async () => {
