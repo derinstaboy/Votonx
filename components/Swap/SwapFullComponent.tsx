@@ -233,12 +233,12 @@ export default function SwapFull() {
         }
 
         const swapArguments = currentFrom === "native" ?
-            [nullAddress, vtnxAddress, toWei(nativeValue), maticVtnxPath] : // Assuming swap path for native to token
-            [vtnxAddress, nullAddress, toWei(tokenValue), vtnxMaticPath];  // Assuming swap path for token to native
+            [nullAddress, vtnxAddress, toWei(nativeValue)] :
+            [vtnxAddress, nullAddress, toWei(tokenValue)];
 
         const overrides = currentFrom === "native" ?
-            { value: toWei(nativeValue) } :
-            { gasPrice: ethers.utils.parseUnits("5000", "gwei") }; // Adjusted gas price
+            { value: toWei(nativeValue) } : 
+            { gasPrice: ethers.utils.parseUnits("100", "gwei") }; // Adjust gas price as needed
 
         await swapTokens({ args: swapArguments, overrides });
 
@@ -261,6 +261,7 @@ export default function SwapFull() {
         setLoading(false);
     }
 };
+
 
 
     const resetInputValues = () => {
