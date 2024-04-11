@@ -2,7 +2,7 @@
 export const DEV_SH = "0xDE3a0C64220C170cfD40F1964008aF80D4978727"
 
 //staking claiming etc related contracts ///
-export const VTNX_DEX_CONTRACT = "0xD5808F01ceFa4Da7eAe1CF841E52bdA9C6a02d35"
+export const VTNX_DEX_CONTRACT = "0x41c7cCb02B4B7c44d22eb37b7A7100FCB0CBb916"
 //Token contracts //
 export const VTNX_TOKEN = "0xf8D9CB7D8ce7d7bEdd8cEACF087f7adF1C9937Ad"
 export const NULL_AD ="0x0000000000000000000000000000000000000000"
