@@ -70,6 +70,8 @@ export default function SwapFull() {
     const taxMultiplier = (100 - taxPercent) / 100
     const percentToSwapAfterFee = 100 - fee
 
+    
+
     const { mutateAsync: swapTokens } = useContractWrite(
         dexContract,
         "swapTokens"
@@ -121,6 +123,14 @@ export default function SwapFull() {
         ethers.utils.parseUnits(VTNX.toString(), 18),
         vtnxMaticPath,
     ]);
+
+    // Handler function for setting max native token (MATIC) value
+    const handleSetMaxNativeValue = () => {
+        if (nativeBalance?.value) {
+            // Update the state to set the input field with the max balance
+            setNativeValue(nativeBalance.displayValue || "0");
+        }
+    };
 
     const executeSwap = async () => {
         setLoading(true);
@@ -241,6 +251,7 @@ export default function SwapFull() {
                         setValue={setNativeValue}
                         tokenImage={"/matic.png"}
                         balance={nativeBalance?.displayValue}
+                        onMaxClick={handleSetMaxNativeValue} // Add the max button click handler
                     />
                 ) : (
 
