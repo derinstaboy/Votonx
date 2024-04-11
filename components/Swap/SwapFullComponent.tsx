@@ -152,17 +152,24 @@ export default function SwapFull() {
 
     const outputAmount = calculateOutputAmount();
 
-    // Function to check token allowance
     const checkTokenAllowance = async () => {
-        try {
+    try {
+        // Check if tokenContract is defined
+        if (tokenContract) {
             const allowance = await tokenContract.call("allowance", [address, VTNX_DEX_CONTRACT]);
             const allowanceAmount = ethers.utils.formatUnits(allowance, 18);
             return parseFloat(allowanceAmount) >= parseFloat(tokenValue);
-        } catch (error) {
-            console.error("Error fetching allowance:", error);
+        } else {
+            // Handle the case where tokenContract is undefined
+            console.error("tokenContract is undefined");
             return false;
         }
-    };
+    } catch (error) {
+        console.error("Error fetching allowance:", error);
+        return false;
+    }
+};
+
 
     // Function to handle approval
     const handleApproval = async () => {
