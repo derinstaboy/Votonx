@@ -171,12 +171,24 @@ export default function SwapFull() {
 };
 
 
-    // After successful approval, set `isApproved` to true
+// Inside your useEffect hook
+useEffect(() => {
+    const checkApproval = async () => {
+        if (address && tokenContract && tokenValue) {
+            const isTokenApproved = await checkTokenAllowance();
+            setIsApproved(isTokenApproved);
+        }
+    };
+    checkApproval();
+}, [address, tokenValue, tokenContract]);
+
+// Updated handleApproval function
 const handleApproval = async () => {
     setLoading(true);
     try {
         await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
-        setIsApproved(true); // Update state here
+        // Recheck and update approval status
+        await checkApproval();
         toast({
             title: "Approval Successful",
             description: "Token spending approved.",
@@ -194,17 +206,6 @@ const handleApproval = async () => {
     }
 };
 
-// Use React effect to check approval status on component mount and when dependencies change
-useEffect(() => {
-    const checkApproval = async () => {
-        const isTokenApproved = await checkTokenAllowance();
-        setIsApproved(isTokenApproved);
-    };
-
-    if (address && tokenValue) {
-        checkApproval();
-    }
-}, [address, tokenValue, tokenContract]);
 
 
 
