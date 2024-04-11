@@ -28,6 +28,14 @@ export default function SwapFull() {
     const [isApproved, setIsApproved] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const {
+    data: getOutputTokenAmountMaticToVTNX,
+    isLoading: isLoadinggetOutputTokenAmountMaticToVTNX,
+} = useContractRead(dexContract, "getOutputTokenAmount", [
+    ethers.utils.parseUnits(matic.toString(), 18),
+    maticVtnxPath,
+]);
+
     // Fetch output token amount
     const fetchOutputAmount = async () => {
         if (fromToken === WMATIC_AD) {
