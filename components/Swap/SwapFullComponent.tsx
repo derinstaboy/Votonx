@@ -218,7 +218,6 @@ export default function SwapFull() {
                 <Image justifyContent={"center"} borderRadius="100%" m="auto" textAlign={"center"} alignContent={"center"} boxShadow="2xl" src={currentFrom === "native" ? "/Logo.png" : "/matic.png"} w="7" h="7" />
             </HStack>
             <VStack textAlign="center">
-<Text justifyContent={"center"} m="auto" textAlign={"center"} alignContent={"center"}>MATIC to VTNX swap function only at this time. </Text>
 
                 <Text>You will receive approx <Text textColor="white">{Number(bottomBoxOutput)} {currentFrom === "native" ? "VTNX" : "MATIC"}</Text>
                 </Text>
