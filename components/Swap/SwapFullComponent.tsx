@@ -251,7 +251,6 @@ export default function SwapFull() {
                         setValue={setNativeValue}
                         tokenImage={"/matic.png"}
                         balance={nativeBalance?.displayValue}
-                        onMaxClick={handleSetMaxNativeValue} // Add the max button click handler
                     />
                 ) : (
 
