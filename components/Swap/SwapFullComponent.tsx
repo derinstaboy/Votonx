@@ -119,12 +119,18 @@ export default function SwapFull() {
 
     const executeSwap = async () => {
         setLoading(true);
-        const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
+
+        
+
+        
+       // const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
         try {
+            const transactionOverrides = {};
+            
             if (currentFrom === "native") {
                 await swapTokens({
                     args: [nullAddress, vtnxAddress, toWei(nativeValue)],
-                    overrides: { value: toWei(nativeValue) },
+                    overrides: { value: toWei(nativeValue), ...transactionOverrides },
                 });
                 toast({
                     status: "success",
@@ -137,7 +143,7 @@ export default function SwapFull() {
                 await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
                 await swapTokens({
                     args: [vtnxAddress, nullAddress, toWei(tokenValue)],
-                    overrides: {gasPrice: gasPrice},
+                    overrides: transactionOverrides,
                 });
                 toast({
                     status: "success",
