@@ -174,7 +174,7 @@ export default function SwapFull() {
     };
 
 
-    const amountToSwap = (Number(currentFrom === "native" ? nativeValue : tokenValue) / 100) * percentToSwapAfterFee
+    const amountToSwap = Number(currentFrom === "native" ? nativeValue : tokenValue); // Updated line
 
     const bottomBoxOutput =
         currentFrom === "native"
@@ -219,8 +219,8 @@ export default function SwapFull() {
             <VStack textAlign="center">
 <Text justifyContent={"center"} m="auto" textAlign={"center"} alignContent={"center"}>MATIC to VTNX swap function only at this time. </Text>
 
-                <Text fontSize={"md"} textAlign="center">Tax Fee: {taxPercent?.toString()}% Fee</Text>
-                <Text>You will receive approx <Text textColor="white">{Number(bottomBoxOutput) * taxMultiplier} {currentFrom === "native" ? "VTNX" : "MATIC"}</Text> after taxes
+                
+                <Text>You will receive approx <Text textColor="white">{Number(bottomBoxOutput)} {currentFrom === "native" ? "VTNX" : "MATIC"}</Text>
                 </Text>
             </VStack>
             <Flex
