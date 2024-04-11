@@ -1,8 +1,8 @@
 //Dev and owner addresses //
-export const DEV_SH = "0xb68b5B646ECa05fe554a5e3cb499e664a91050D5"
+export const DEV_SH = "0xDE3a0C64220C170cfD40F1964008aF80D4978727"
 
 //staking claiming etc related contracts ///
-export const VTNX_DEX_CONTRACT = "0xBc10b882AB8216A902a90F4AA61BeBE73747dd98"
+export const VTNX_DEX_CONTRACT = "0x2a9DCaa4617096575EDC3566634716861aee0b44"
 //Token contracts //
 export const VTNX_TOKEN = "0xf8D9CB7D8ce7d7bEdd8cEACF087f7adF1C9937Ad"
 export const NULL_AD ="0x0000000000000000000000000000000000000000"
