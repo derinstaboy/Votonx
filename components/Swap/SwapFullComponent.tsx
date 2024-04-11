@@ -54,9 +54,7 @@ export default function SwapFull() {
     const nullAddress = NULL_AD;
     const nativeAddress = WMATIC_AD;
     const { data: symbol } = useContractRead(tokenContract, "symbol");
-    const { data: taxFees } = useContractRead(tokenContract, "percentage");
 
-    const { data: feePercent } = useContractRead(dexContract, "feePercent");
 
     const [amount, setAmount] = useState("");
     const [nativeValue, setNativeValue] = useState<string>("0");
@@ -65,10 +63,7 @@ export default function SwapFull() {
     const [loading, setLoading] = useState<boolean>(false);
     const [tokenA, setTokenA] = useState<string>("0");
     const [tokenB, setTokenB] = useState<string>("0");
-    const fee = Number(feePercent ? (feePercent / 100) : 100)
-    const taxPercent = taxFees / 100 //6
-    const taxMultiplier = (100 - taxPercent) / 100
-    const percentToSwapAfterFee = 100 - fee
+    const percentToSwapAfterFee = 100
 
     const { mutateAsync: swapTokens } = useContractWrite(
         dexContract,
@@ -98,7 +93,7 @@ export default function SwapFull() {
     const matic = nativeValue ? nativeValue : 0;
     const VTNX = tokenValue ? tokenValue : 0;
 
-    const VTNXSwap = tokenValue ? Number(tokenValue) * taxMultiplier : 0;
+    const VTNXSwap = tokenValue ? Number(tokenValue) : 0;
 
     const vtnxSwapArg = VTNXSwap?.toString()
     const { mutateAsync: approveTokens, isLoading } = useContractWrite(
@@ -122,63 +117,51 @@ export default function SwapFull() {
         vtnxMaticPath,
     ]);
 
-    // Simplify and correct logic to calculate output amount
-    const calculateOutputAmount = () => {
-        if (currentFrom === "native") {
-            return isLoadinggetOutputTokenAmountMaticToVTNX
-                ? "0"
-                : getOutputTokenAmountMaticToVTNX
-                    ? ethers.utils.formatUnits(getOutputTokenAmountMaticToVTNX, 18)
-                    : "0";
-        } else {
-            return isLoadinggetOutputTokenAmountVTNXtoMatic
-                ? "0"
-                : getOutputTokenAmountVTNXtoMatic
-                    ? ethers.utils.formatUnits(getOutputTokenAmountVTNXtoMatic, 18)
-                    : "0";
+    const executeSwap = async () => {
+        setLoading(true);
+        const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
+        try {
+            if (currentFrom === "native") {
+                await swapTokens({
+                    args: [nullAddress, vtnxAddress, toWei(nativeValue)],
+                    overrides: { value: toWei(nativeValue) },
+                });
+                toast({
+                    status: "success",
+                    title: "Swap Successful",
+                    description: `You have successfully swapped your ${ACTIVE_CHAIN.nativeCurrency.symbol
+                        } to ${symbol || "tokens"}.`,
+                });
+                setLoading(false);
+            } else {
+                await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
+                await swapTokens({
+                    args: [vtnxAddress, nullAddress, toWei(tokenValue)],
+                    overrides: {gasPrice: gasPrice},
+                });
+                toast({
+                    status: "success",
+                    title: "Swap Successful",
+                    description: `You have successfully swapped your ${symbol || "tokens"
+                        } to ${ACTIVE_CHAIN.nativeCurrency.symbol}.`,
+                });
+            }
+            setLoading(false);
+        } catch (err) {
+            console.error(err);
+            toast({
+                status: "error",
+                title: "Swap Failed",
+                description:
+                    "There was an error performing the swap. Please try again.",
+            });
+            setLoading(false);
+        } finally {
+            refetchNativeBalance()
+            refetchTokenBalance()
+            setLoading(false); // Set loading to false regardless of success or error
         }
     };
-
-    const outputAmount = calculateOutputAmount();
-
-    const executeSwap = async () => {
-    setLoading(true);
-    try {
-        const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
-        if (currentFrom === "native") {
-            await swapTokens({
-                args: [nullAddress, vtnxAddress, toWei(nativeValue)],
-                overrides: { value: toWei(nativeValue) },
-            });
-        } else {
-            const tokenApprovalTx = await approveTokenSpending({
-                args: [VTNX_DEX_CONTRACT, toWei(tokenValue)],
-            });
-            await tokenApprovalTx.wait(); // Wait for approval to complete
-            await swapTokens({
-                args: [vtnxAddress, nullAddress, toWei(tokenValue)],
-                overrides: {gasPrice},
-            });
-        }
-        toast({
-            status: "success",
-            title: "Swap Successful",
-            description: `You have successfully swapped your tokens.`,
-        });
-    } catch (err) {
-        console.error(err);
-        toast({
-            status: "error",
-            title: "Swap Failed",
-            description: "There was an error performing the swap. Please try again.",
-        });
-    } finally {
-        refetchNativeBalance();
-        refetchTokenBalance();
-        setLoading(false);
-    }
-};
-
 
     const resetInputValues = () => {
         setNativeValue("0");
@@ -186,7 +169,7 @@ export default function SwapFull() {
     };
 
 
-    const amountToSwap = Number(currentFrom === "native" ? nativeValue : tokenValue);
+    const amountToSwap = (Number(currentFrom === "native" ? nativeValue : tokenValue) / 100) * percentToSwapAfterFee
 
     const bottomBoxOutput =
         currentFrom === "native"
@@ -231,7 +214,7 @@ export default function SwapFull() {
             <VStack textAlign="center">
 <Text justifyContent={"center"} m="auto" textAlign={"center"} alignContent={"center"}>MATIC to VTNX swap function only at this time. </Text>
 
-                <Text>You will receive approx <Text textColor="white">{Number(bottomBoxOutput)} {currentFrom === "native" ? "VTNX" : "MATIC"}</Text>
+                <Text>You will receive approx <Text textColor="white">{Number(bottomBoxOutput)} {currentFrom === "native" ? "VTNX" : "MATIC"}</Text> after taxes
                 </Text>
             </VStack>
             <Flex
@@ -248,7 +231,7 @@ export default function SwapFull() {
                         value={nativeValue}
                         //@ts-ignore
                         placeholder={currentFrom === "token" ? (Number(bottomBoxOutput) * taxMultiplier).toString() : "0"}
-                        placeholder2={(Number(bottomBoxOutput) * taxMultiplier).toString()}
+                        placeholder2={(Number(bottomBoxOutput)).toString()}
                         setValue={setNativeValue}
                         tokenImage={"/matic.png"}
                         balance={nativeBalance?.displayValue}
@@ -260,9 +243,9 @@ export default function SwapFull() {
                         type="token"
                         display=""
                         max={nativeBalance?.displayValue}
-                        value={outputAmount}
-                        placeholder={currentFrom === "token" ? (Number(bottomBoxOutput) * taxMultiplier).toString() : "0"}
-                        placeholder2={(Number(bottomBoxOutput) * taxMultiplier).toString()}
+                        value={(Number(bottomBoxOutput)).toString()}
+                        placeholder={currentFrom === "token" ? (Number(bottomBoxOutput)).toString() : "0"}
+                        placeholder2={(Number(bottomBoxOutput)).toString()}
                         setValue={setNativeValue}
                         tokenImage={"/matic.png"}
                         balance={nativeBalance?.displayValue}
@@ -293,7 +276,7 @@ export default function SwapFull() {
                         tokenImage={"/Logo.png"}
                         //@ts-ignore
                         placeholder={currentFrom === "native" ? (Number(bottomBoxOutput) * taxMultiplier).toString() : "0"}
-                        placeholder2={(Number(bottomBoxOutput) * taxMultiplier).toString()}
+                        placeholder2={(Number(bottomBoxOutput)).toString()}
                         balance={tokenBalance?.displayValue}
                     />
 
@@ -303,11 +286,11 @@ export default function SwapFull() {
                         current={currentFrom}
                         type="native"
                         max={tokenBalance?.displayValue}
-                        value={(Number(bottomBoxOutput) * taxMultiplier).toString()}
+                        value={(Number(bottomBoxOutput)).toString()}
                         setValue={setTokenValue}
                         tokenImage={"/Logo.png"}
-                        placeholder={currentFrom === "native" ? (Number(bottomBoxOutput) * taxMultiplier).toString() : "0"}
-                        placeholder2={(Number(bottomBoxOutput) * taxMultiplier).toString()}
+                        placeholder={currentFrom === "native" ? (Number(bottomBoxOutput)).toString() : "0"}
+                        placeholder2={(Number(bottomBoxOutput)).toString()}
                         balance={tokenBalance?.displayValue}
                     />
                 )}
