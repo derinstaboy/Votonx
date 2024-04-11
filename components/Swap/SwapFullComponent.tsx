@@ -233,8 +233,8 @@ export default function SwapFull() {
         }
 
         const swapArguments = currentFrom === "native" ?
-            [nullAddress, vtnxAddress, toWei(nativeValue)] :
-            [vtnxAddress, nullAddress, toWei(tokenValue)];
+            [nativeAddress, vtnxAddress, toWei(nativeValue)] :
+            [vtnxAddress, nativeAddress, toWei(tokenValue)];
 
         const overrides = currentFrom === "native" ?
             { value: toWei(nativeValue) } : 
