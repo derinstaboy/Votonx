@@ -23,7 +23,7 @@ import {
     useTokenBalance,
 } from "@thirdweb-dev/react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Cronos, Polygon } from "@thirdweb-dev/chains";
 import { ethers } from "ethers";
 import {
