@@ -171,42 +171,52 @@ export default function SwapFull() {
 };
 
 
-// Inside your useEffect hook
-useEffect(() => {
+    // Define checkApproval as an async function outside of useEffect
     const checkApproval = async () => {
-        if (address && tokenContract && tokenValue) {
-            const isTokenApproved = await checkTokenAllowance();
-            setIsApproved(isTokenApproved);
+        if (!address || !tokenContract || !tokenValue) {
+            return false;
+        }
+
+        try {
+            const allowance = await tokenContract.call("allowance", [address, VTNX_DEX_CONTRACT]);
+            const allowanceAmount = ethers.utils.formatUnits(allowance, 18);
+            return parseFloat(allowanceAmount) >= parseFloat(tokenValue);
+        } catch (error) {
+            console.error("Error fetching allowance:", error);
+            return false;
         }
     };
-    checkApproval();
-}, [address, tokenValue, tokenContract]);
 
-// Updated handleApproval function
-const handleApproval = async () => {
-    setLoading(true);
-    try {
-        await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
-        // Recheck and update approval status
-        await checkApproval();
-        toast({
-            title: "Approval Successful",
-            description: "Token spending approved.",
-            status: "success",
+    // Updated handleApproval function
+    const handleApproval = async () => {
+        setLoading(true);
+        try {
+            await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
+            // Recheck and update approval status
+            await checkApproval();
+            toast({
+                title: "Approval Successful",
+                description: "Token spending approved.",
+                status: "success",
+            });
+        } catch (err) {
+            console.error(err);
+            toast({
+                title: "Approval Failed",
+                description: "There was an error in token approval.",
+                status: "error",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // In your useEffect hook
+    useEffect(() => {
+        checkApproval().then(isTokenApproved => {
+            setIsApproved(isTokenApproved);
         });
-    } catch (err) {
-        console.error(err);
-        toast({
-            title: "Approval Failed",
-            description: "There was an error in token approval.",
-            status: "error",
-        });
-    } finally {
-        setLoading(false);
-    }
-};
-
-
+    }, [address, tokenValue, tokenContract]);
 
 
 
