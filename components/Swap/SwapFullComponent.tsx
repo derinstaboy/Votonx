@@ -65,6 +65,7 @@ export default function SwapFull() {
     const [loading, setLoading] = useState<boolean>(false);
     const [tokenA, setTokenA] = useState<string>("0");
     const [tokenB, setTokenB] = useState<string>("0");
+    const [isApproved, setIsApproved] = useState(false); // State to track approval status
     const fee = Number(feePercent ? (feePercent / 100) : 100)
     const taxPercent = taxFees / 100 //6
     const taxMultiplier = (100 - taxPercent) / 100
@@ -151,7 +152,41 @@ export default function SwapFull() {
 
     const outputAmount = calculateOutputAmount();
 
+    // Function to handle approval
+    const handleApproval = async () => {
+        setLoading(true);
+        try {
+            await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
+            setIsApproved(true); // Set approval status
+            toast({
+                title: "Approval Successful",
+                description: "Token spending approved.",
+                status: "success",
+            });
+        } catch (err) {
+            console.error(err);
+            toast({
+                title: "Approval Failed",
+                description: "There was an error in token approval.",
+                status: "error",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     const executeSwap = async () => {
+
+        if (!isApproved) {
+            toast({
+                title: "Approval Required",
+                description: "Please approve token spending before swapping.",
+                status: "warning",
+            });
+            return;
+        }
+        
         setLoading(true);
         const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
         try {
@@ -191,6 +226,8 @@ export default function SwapFull() {
             });
             setLoading(false);
         } finally {
+            setIsApproved(false); // Reset approval status after swap
+            setLoading(false);
             refetchNativeBalance()
             refetchTokenBalance()
             setLoading(false); // Set loading to false regardless of success or error
@@ -330,17 +367,13 @@ export default function SwapFull() {
                     />
                 )}
             </Flex>
-            {address ? (
-                <Button
-                    onClick={executeSwap}
-                    py="7"
-                    fontSize="2xl"
-                    rounded="xl"
-                    isDisabled={loading}
-                    boxShadow="2xl"
-                    bg={useColorModeValue("pt1", "pt4")}
-                    variant={"primary"}
-                >
+            {address && !isApproved ? (
+                <Button onClick={handleApproval} disabled={loading}>
+                    {loading ? <Spinner /> : "Approve Tokens"}
+                </Button>
+            ) : null}
+            {address && isApproved ? (
+                <Button onClick={executeSwap} disabled={loading}>
                     {loading ? <Spinner /> : "Execute Swap"}
                 </Button>
             ) : (
