@@ -160,7 +160,7 @@ export default function SwapFull() {
             } else {
                 await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
                 await swapTokens({
-                    args: [vtnxAddress, nullAddress, toWei(tokenValue)],
+                    args: [vtnxAddress, nativeAddress, toWei(tokenValue)],
                     overrides: {gasPrice: gasPrice},
                 });
                 toast({
