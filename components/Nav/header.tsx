@@ -98,7 +98,11 @@ const Header: React.FC<HeaderProps> = ({
           size={{ base: "xs", lg: "sm" }}
         >
           <DrawerOverlay />
-          <DrawerContent bg={bgIm} textColor={"white"}>
+          <DrawerContent
+  bg={`rgba(0, 0, 0, 0.7)`} // Dark overlay with reduced opacity
+  backdropFilter="blur(4px)" // Optional: Adds a blur effect to the background
+  textColor={"white"}
+>
             <DrawerHeader bgSize={"cover"} p={2}>
               <HStack justifyContent="space-between" p={1}>
                 <HStack>
