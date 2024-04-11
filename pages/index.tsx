@@ -111,7 +111,7 @@ const Home: NextPage = () => {
             <Heading textColor="white" fontSize={"xl"}>
               View the contract
             </Heading>
-            <Button as={Link} target="_blank" href="https://polygonscan.com/token/0x3d1b34db20dd01A5e744Fb44a086b34c963aB7De">
+            <Button as={Link} target="_blank" href="https://polygonscan.com/token/0xf8D9CB7D8ce7d7bEdd8cEACF087f7adF1C9937Ad">
               View Now
             </Button>
           </VStack>
