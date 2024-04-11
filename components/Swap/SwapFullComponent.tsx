@@ -152,12 +152,23 @@ export default function SwapFull() {
 
     const outputAmount = calculateOutputAmount();
 
+    // Function to check token allowance
+    const checkTokenAllowance = async () => {
+        try {
+            const allowance = await tokenContract.call("allowance", [address, VTNX_DEX_CONTRACT]);
+            const allowanceAmount = ethers.utils.formatUnits(allowance, 18);
+            return parseFloat(allowanceAmount) >= parseFloat(tokenValue);
+        } catch (error) {
+            console.error("Error fetching allowance:", error);
+            return false;
+        }
+    };
+
     // Function to handle approval
     const handleApproval = async () => {
         setLoading(true);
         try {
             await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
-            setIsApproved(true); // Set approval status
             toast({
                 title: "Approval Successful",
                 description: "Token spending approved.",
@@ -178,16 +189,18 @@ export default function SwapFull() {
 
     const executeSwap = async () => {
 
-        if (!isApproved) {
+       setLoading(true);
+        const isTokenApproved = await checkTokenAllowance();
+        if (!isTokenApproved) {
             toast({
                 title: "Approval Required",
                 description: "Please approve token spending before swapping.",
                 status: "warning",
             });
+            setLoading(false);
             return;
         }
         
-        setLoading(true);
         const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
         try {
             if (currentFrom === "native") {
