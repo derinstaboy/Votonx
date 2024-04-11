@@ -170,13 +170,14 @@ const Header: React.FC<HeaderProps> = ({
                   </AccordionItem>
                 ))}
                 <AccordionItem 
-  bgImg={"/VotonxTextLogo.png"} 
-  h={{ base: "50px", md: "70px", lg: "100px" }} // Responsive height
-  w={{ base: "50px", md: "70px", lg: "100px" }} // Responsive width
-  bgSize={"cover"}
+  bgImg={"/VotonxTextLogo.png"}
+  h={{ base: "50px", md: "70px", lg: "100px" }}
+  w={{ base: "50px", md: "70px", lg: "100px" }}
+  bgSize="contain"
 >
   <AccordionPanel />
 </AccordionItem>
+
 
               </Accordion>
 
