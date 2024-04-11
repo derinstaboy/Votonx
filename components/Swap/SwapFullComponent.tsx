@@ -321,7 +321,7 @@ export default function SwapFull() {
                         current={currentFrom}
                         type="native"
                         max={tokenBalance?.displayValue}
-                        value={(Number(bottomBoxOutput) * taxMultiplier).toString()}
+                        value={outputAmount}
                         setValue={setTokenValue}
                         tokenImage={"/Logo.png"}
                         placeholder={currentFrom === "native" ? (Number(bottomBoxOutput) * taxMultiplier).toString() : "0"}
