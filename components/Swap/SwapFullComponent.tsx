@@ -122,6 +122,25 @@ export default function SwapFull() {
         vtnxMaticPath,
     ]);
 
+    // Simplify and correct logic to calculate output amount
+    const calculateOutputAmount = () => {
+        if (currentFrom === "native") {
+            return isLoadinggetOutputTokenAmountMaticToVTNX
+                ? "0"
+                : getOutputTokenAmountMaticToVTNX
+                    ? ethers.utils.formatUnits(getOutputTokenAmountMaticToVTNX, 18)
+                    : "0";
+        } else {
+            return isLoadinggetOutputTokenAmountVTNXtoMatic
+                ? "0"
+                : getOutputTokenAmountVTNXtoMatic
+                    ? ethers.utils.formatUnits(getOutputTokenAmountVTNXtoMatic, 18)
+                    : "0";
+        }
+    };
+
+    const outputAmount = calculateOutputAmount();
+
     const executeSwap = async () => {
         setLoading(true);
         const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
@@ -248,7 +267,7 @@ export default function SwapFull() {
                         type="token"
                         display=""
                         max={nativeBalance?.displayValue}
-                        value={(Number(bottomBoxOutput) * taxMultiplier).toString()}
+                        value={outputAmount}
                         placeholder={currentFrom === "token" ? (Number(bottomBoxOutput) * taxMultiplier).toString() : "0"}
                         placeholder2={(Number(bottomBoxOutput) * taxMultiplier).toString()}
                         setValue={setNativeValue}
