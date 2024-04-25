@@ -119,47 +119,55 @@ export default function SwapFull() {
 
     const executeSwap = async () => {
         setLoading(true);
-        const baseFee = ethers.utils.parseUnits("71", "gwei"); // Base fee in gwei
-        const priorityFee = ethers.utils.parseUnits("40", "gwei"); // Priority fee in gwei
-        const totalGasPrice = baseFee.add(priorityFee); // Total gas price = Base + Priority
 
-        const transactionOverrides = {
-            gasPrice: totalGasPrice
-        };
+        
 
+        
+       // const gasPrice = ethers.utils.parseUnits((5000).toString(), "gwei");
         try {
+            const transactionOverrides = {};
+            
             if (currentFrom === "native") {
                 await swapTokens({
                     args: [nullAddress, vtnxAddress, toWei(nativeValue)],
                     overrides: { value: toWei(nativeValue), ...transactionOverrides },
                 });
+                toast({
+                    status: "success",
+                    title: "Swap Successful",
+                    description: `You have successfully swapped your ${ACTIVE_CHAIN.nativeCurrency.symbol
+                        } to ${symbol || "tokens"}.`,
+                });
+                setLoading(false);
             } else {
                 await approveTokenSpending({ args: [VTNX_DEX_CONTRACT, toWei(tokenValue)] });
                 await swapTokens({
                     args: [vtnxAddress, nullAddress, toWei(tokenValue)],
                     overrides: transactionOverrides,
                 });
+                toast({
+                    status: "success",
+                    title: "Swap Successful",
+                    description: `You have successfully swapped your ${symbol || "tokens"
+                        } to ${ACTIVE_CHAIN.nativeCurrency.symbol}.`,
+                });
             }
-            toast({
-                status: "success",
-                title: "Swap Successful",
-                description: `You have successfully swapped your ${symbol || "tokens"} to ${ACTIVE_CHAIN.nativeCurrency.symbol}.`,
-            });
+            setLoading(false);
         } catch (err) {
             console.error(err);
             toast({
                 status: "error",
                 title: "Swap Failed",
                 description:
-                "There was an error performing the swap. Please try again.",
+                    "There was an error performing the swap. Please try again.",
             });
-        } finally {
-            refetchNativeBalance();
-            refetchTokenBalance();
             setLoading(false);
+        } finally {
+            refetchNativeBalance()
+            refetchTokenBalance()
+            setLoading(false); // Set loading to false regardless of success or error
         }
     };
-
 
     const resetInputValues = () => {
         setNativeValue("0");
