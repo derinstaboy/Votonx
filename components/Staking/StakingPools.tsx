@@ -13,19 +13,19 @@ const StakingPools: React.FC = () => {
         width="100%"
       >
         <StakingPool
-          poolAddress="0x0E02e52157561e54b019f4EF6595F021332fCEd9"
+          poolAddress="0x4aF686dE1d2032F483f3C1913B385cE488eBbE3C"
           poolName="VTNX - Unlocked"
           description="Unlocked Staking: 1 - 1B wallet holdings"
           isLocked={false}
         />
         <StakingPool
-          poolAddress="0xE2C189a5BcC5cFD64471aCd7B5581BFe9a5dEEF0"
+          poolAddress="0x3c6f57994df94940e362706fe38b838089Fb04Ab"
           poolName="VTNX - Locked"
           description="Locked Staking: 1 - 1B wallet holdings"
           isLocked={true}
         />
         <StakingPool
-          poolAddress="0x13Fc394d72b10CeAfecE4716b94135b2baE3b484"
+          poolAddress="0x9a65728019032F8EDAF43B6AaBd163Bf7732c33b"
           poolName="VTNX - Locked"
           description="Locked Staking: 1B+ wallet holdings"
           isLocked={true}
