@@ -10,7 +10,7 @@ interface SocialFollowModalProps {
 }
 
 const SocialFollowModal: React.FC<SocialFollowModalProps> = ({ isOpen, onClose, onFollowComplete }) => {
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(20);
 
   useEffect(() => {
     if (timer > 0) {
