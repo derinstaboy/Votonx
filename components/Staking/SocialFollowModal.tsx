@@ -10,19 +10,16 @@ interface SocialFollowModalProps {
 }
 
 const SocialFollowModal: React.FC<SocialFollowModalProps> = ({ isOpen, onClose, onFollowComplete }) => {
-  const [followedTwitter, setFollowedTwitter] = useState(false);
-  const [followedTelegram, setFollowedTelegram] = useState(false);
-  const [followedDiscord, setFollowedDiscord] = useState(false);
-  const [followedMagneticMiles, setFollowedMagneticMiles] = useState(false);
+  const [timer, setTimer] = useState(10);
 
   useEffect(() => {
-    const checkAllFollowed = () => {
-      if (followedTwitter && followedTelegram && followedDiscord && followedMagneticMiles) {
-        onFollowComplete();
-      }
-    };
-    checkAllFollowed();
-  }, [followedTwitter, followedTelegram, followedDiscord, followedMagneticMiles, onFollowComplete]);
+    if (timer > 0) {
+      const timerId = setTimeout(() => setTimer(timer - 1), 1000);
+      return () => clearTimeout(timerId);
+    } else {
+      onFollowComplete();
+    }
+  }, [timer, onFollowComplete]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -37,7 +34,6 @@ const SocialFollowModal: React.FC<SocialFollowModalProps> = ({ isOpen, onClose, 
               colorScheme="twitter"
               onClick={() => {
                 window.open("https://twitter.com/VotonxEnergy", "_blank");
-                setFollowedTwitter(true);
               }}
             >
               Twitter
@@ -47,7 +43,6 @@ const SocialFollowModal: React.FC<SocialFollowModalProps> = ({ isOpen, onClose, 
               colorScheme="telegram"
               onClick={() => {
                 window.open("https://t.me/votonx", "_blank");
-                setFollowedTelegram(true);
               }}
             >
               Telegram
@@ -59,7 +54,6 @@ const SocialFollowModal: React.FC<SocialFollowModalProps> = ({ isOpen, onClose, 
               _hover={{ bg: "#5a6ea3" }}
               onClick={() => {
                 window.open("https://discord.com/invite/3jQkXK9BJM", "_blank");
-                setFollowedDiscord(true);
               }}
             >
               Discord
@@ -69,17 +63,14 @@ const SocialFollowModal: React.FC<SocialFollowModalProps> = ({ isOpen, onClose, 
               colorScheme="blue"
               onClick={() => {
                 window.open("https://x.com/MagneticMLLC", "_blank");
-                setFollowedMagneticMiles(true);
               }}
             >
               Magnetic Miles
             </Button>
+            <Text>{timer} seconds</Text>
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={onClose}>
-            {followedTwitter && followedTelegram && followedDiscord && followedMagneticMiles ? "Done" : "Close"}
-          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
