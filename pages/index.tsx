@@ -7,10 +7,7 @@ import {
 import { easeIn } from "framer-motion";
 import WalletButton from "../components/Nav/ConnectWalletButton";
 
-
-
 const Home: NextPage = () => {
-
   const address = useAddress();
   const chainid = useChainId();
   const switchChain = useSwitchChain();
@@ -21,7 +18,6 @@ const Home: NextPage = () => {
         <VStack h={"100vh"} justifyContent={"center"} textAlign={"center"}>
           <Heading textColor={"#f0c415"}>Please Connect a Wallet</Heading>
           <WalletButton truncatedAddress={address ? address : ""} truncatedValue={address ? address : ""} address={address ? address : ""} />
-
         </VStack>
       </Container>
     );
@@ -48,47 +44,82 @@ const Home: NextPage = () => {
       textAlign={"center"}
       m="auto"
     >
-      <Stack direction={{base:"column", md: "column", lg: "row"}} justifyContent={{base: "center", lg:"space-between"}}>
-        <Image src="/Banner.png" h={{ base: "170px", lg: "30%" }} w={{ base: "300px", lg: "30%" }} border={"2px"} borderRadius={"md"} _hover={{
-          boxShadow: "2xl",
-          transform: "scale(1.1)", // Apply scaling on hover
-          transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
-        }}
+      <Stack direction={{ base: "column", md: "column", lg: "row" }} justifyContent={{ base: "center", lg: "space-between" }}>
+        <Image
+          src="/Banner.png"
+          h={{ base: "170px", lg: "30%" }}
+          w={{ base: "300px", lg: "30%" }}
+          border={"2px"}
+          borderRadius={"md"}
+          _hover={{
+            boxShadow: "2xl",
+            transform: "scale(1.1)", // Apply scaling on hover
+            transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
+          }}
           transition="transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)" // Add cubic bezier transition
-          justifyContent={{base:"center", md:"left", lg:"left"}}
+          justifyContent={{ base: "center", md: "left", lg: "left" }}
           m="auto"
         />
         <Heading m="auto" textAlign={"center"} textColor={"#f0c415"} fontSize={"7xl"}>Welcome to the Votonx DApp</Heading>
       </Stack>
       <SimpleGrid columns={{ base: 1, lg: 5 }} m="auto" justifyContent={"center"} w={"100%"} mt={10} spacing={4}>
-        <Box h={175} w={175} m="auto" _hover={{
-          boxShadow: "2xl",
-          transform: "scale(1.1)", // Apply scaling on hover
-          transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
-        }}
+        <Box
+          h={175}
+          w={175}
+          m="auto"
+          _hover={{
+            boxShadow: "2xl",
+            transform: "scale(1.1)", // Apply scaling on hover
+            transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
+          }}
           transition="transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)" // Add cubic bezier transition
         >
           <VStack>
             <Image src="/VTNX.png" h="50" w="50" />
-
             <Heading textColor="white" fontSize={"xl"}>
-              Buy $VTNX Tokens            </Heading>
+              Buy $VTNX Tokens
+            </Heading>
             <Button as={Link} href="/Swap">
               Swap Now
             </Button>
           </VStack>
         </Box>
 
-        <Box h={175} w={175} m="auto" _hover={{
-          boxShadow: "2xl",
-          transform: "scale(1.1)", // Apply scaling on hover
-          transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
-        }}
+        <Box
+          h={175}
+          w={175}
+          m="auto"
+          _hover={{
+            boxShadow: "2xl",
+            transform: "scale(1.1)", // Apply scaling on hover
+            transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
+          }}
           transition="transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)" // Add cubic bezier transition
         >
           <VStack>
             <Image src="/VTNX.png" h="50" w="50" />
+            <Heading textColor="white" fontSize={"xl"}>
+              Stake $VTNX Tokens
+            </Heading>
+            <Button as={Link} href="/Staking">
+              Stake Now
+            </Button>
+          </VStack>
+        </Box>
 
+        <Box
+          h={175}
+          w={175}
+          m="auto"
+          _hover={{
+            boxShadow: "2xl",
+            transform: "scale(1.1)", // Apply scaling on hover
+            transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
+          }}
+          transition="transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)" // Add cubic bezier transition
+        >
+          <VStack>
+            <Image src="/VTNX.png" h="50" w="50" />
             <Heading textColor="white" fontSize={"xl"}>
               Read the whitepaper
             </Heading>
@@ -98,16 +129,19 @@ const Home: NextPage = () => {
           </VStack>
         </Box>
 
-        <Box h={175} w={175} m="auto" _hover={{
-          boxShadow: "2xl",
-          transform: "scale(1.1)", // Apply scaling on hover
-          transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
-        }}
+        <Box
+          h={175}
+          w={175}
+          m="auto"
+          _hover={{
+            boxShadow: "2xl",
+            transform: "scale(1.1)", // Apply scaling on hover
+            transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
+          }}
           transition="transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)" // Add cubic bezier transition
         >
           <VStack>
             <Image src="/VTNX.png" h="50" w="50" />
-
             <Heading textColor="white" fontSize={"xl"}>
               View the contract
             </Heading>
@@ -117,16 +151,19 @@ const Home: NextPage = () => {
           </VStack>
         </Box>
 
-        <Box h={175} w={175} m="auto" _hover={{
-          boxShadow: "2xl",
-          transform: "scale(1.1)", // Apply scaling on hover
-          transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
-        }}
+        <Box
+          h={175}
+          w={175}
+          m="auto"
+          _hover={{
+            boxShadow: "2xl",
+            transform: "scale(1.1)", // Apply scaling on hover
+            transition: "transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)", // Add cubic bezier transition
+          }}
           transition="transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)" // Add cubic bezier transition
         >
           <VStack>
             <Image src="/VTNX.png" h="50" w="50" />
-
             <Heading textColor="white" fontSize={"xl"}>
               See the chart
             </Heading>
@@ -139,4 +176,5 @@ const Home: NextPage = () => {
     </Box>
   );
 };
+
 export default Home;
