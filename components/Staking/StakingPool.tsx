@@ -135,7 +135,7 @@ const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, descri
 
   const handleClaim = async () => {
     try {
-      await depositTokens({ args: [0] });
+      await withdrawTokens({ args: [0] });
       toast({ status: "success", title: "Claim Successful", description: "Your rewards have been claimed." });
     } catch (err) {
       handleError(err, "An error occurred while claiming rewards.");
