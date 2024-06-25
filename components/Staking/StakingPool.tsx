@@ -49,6 +49,7 @@ const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, descri
   const { data: tokenBalance } = useTokenBalance(tokenContract, address);
   const { data: exitPenaltyPerc } = useContractRead(stakingContract, "exitPenaltyPerc");
   const { data: holderUnlockTime } = useContractRead(stakingContract, "holderUnlockTime", [address]);
+  const { data: lastRewardTimestamp } = useContractRead(stakingContract, "poolInfo", [0]);
 
   const [apr, setApr] = useState<string>("0");
   const [isApproved, setIsApproved] = useState<boolean>(false);
@@ -198,7 +199,7 @@ const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, descri
             <Button onClick={handleApprove} colorScheme="blue" size="sm">Approve</Button>
           ) : (
             <>
-              <Button onClick={onOpen} colorScheme="blue" size="sm">Stake</Button>
+              <Button onClick={onOpen} colorScheme="blue" size="sm" disabled={isSoloStaking && lastRewardTimestamp === 99999999999}>Stake</Button>
               <Button onClick={handleWithdraw} colorScheme="red" size="sm">Withdraw</Button>
               <Button onClick={handleClaim} colorScheme="green" size="sm">Claim</Button>
               <Button onClick={handleCompound} colorScheme="purple" size="sm">Compound</Button>
