@@ -25,7 +25,7 @@ const StakingPools: React.FC = () => {
           isLocked={true}
         />
         <StakingPool
-          poolAddress="0x751efEA09b2693B81B40B4521ff50e802B6eafAc"
+          poolAddress="0xBbe9DE902b11f9e9dA57E98A415fAcF4998f6131"
           poolName="VTNX - Locked"
           description="Locked Staking: 1B+ wallet holdings"
           isLocked={true}
