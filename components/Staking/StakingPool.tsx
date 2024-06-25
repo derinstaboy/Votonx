@@ -57,7 +57,6 @@ const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, descri
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
   const { mutateAsync: depositTokens } = useContractWrite(stakingContract, "deposit");
   const { mutateAsync: withdrawTokens } = useContractWrite(stakingContract, "withdraw");
-  const { mutateAsync: withdrawRewards } = useContractWrite(stakingContract, isSoloStaking ? "claimRewards" : "withdraw");
   const { mutateAsync: emergencyWithdraw } = useContractWrite(stakingContract, "emergencyWithdraw");
   const { mutateAsync: compoundRewards } = useContractWrite(stakingContract, isSoloStaking ? "compound" : undefined);
 
@@ -138,7 +137,11 @@ const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, descri
 
   const handleClaim = async () => {
     try {
-      await withdrawRewards({ args: isSoloStaking ? [] : [0] });
+      if (isSoloStaking) {
+        await withdrawRewards({ args: [] });
+      } else {
+        await depositTokens({ args: [0] });
+      }
       toast({ status: "success", title: "Claim Successful", description: "Your rewards have been claimed." });
     } catch (err) {
       handleError(err, "An error occurred while claiming rewards.");
