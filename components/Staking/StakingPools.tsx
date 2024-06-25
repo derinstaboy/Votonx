@@ -25,10 +25,11 @@ const StakingPools: React.FC = () => {
           isLocked={true}
         />
         <StakingPool
-          poolAddress="0x9a65728019032F8EDAF43B6AaBd163Bf7732c33b"
+          poolAddress="0x751efEA09b2693B81B40B4521ff50e802B6eafAc"
           poolName="VTNX - Locked"
           description="Locked Staking: 1B+ wallet holdings"
           isLocked={true}
+          isSoloStaking={true} // Pass the prop to indicate this is Pool 3
         />
       </SimpleGrid>
     </Center>
