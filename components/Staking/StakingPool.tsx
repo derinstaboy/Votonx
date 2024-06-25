@@ -57,6 +57,7 @@ const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, descri
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
   const { mutateAsync: depositTokens } = useContractWrite(stakingContract, "deposit");
   const { mutateAsync: withdrawTokens } = useContractWrite(stakingContract, "withdraw");
+  const { mutateAsync: claimRewards } = useContractWrite(stakingContract, "claimRewards");
   const { mutateAsync: emergencyWithdraw } = useContractWrite(stakingContract, "emergencyWithdraw");
   const { mutateAsync: compoundRewards } = useContractWrite(stakingContract, isSoloStaking ? "compound" : undefined);
 
@@ -138,7 +139,7 @@ const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, descri
   const handleClaim = async () => {
     try {
       if (isSoloStaking) {
-        await withdrawRewards({ args: [] });
+        await claimRewards({ args: [] });
       } else {
         await depositTokens({ args: [0] });
       }
