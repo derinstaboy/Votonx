@@ -28,17 +28,19 @@ import SocialFollowModal from "./SocialFollowModal";
 import { VTNX_TOKEN } from "../../Consts/Addresses";
 import VTNX_STAKING_ABI from "../../Consts/ABIS/VTNXStaking.json";
 import VTNX_ABI from "../../Consts/ABIS/VTNXToken.json";
+import VTNX_SOLO_STAKING_ABI from "../../Consts/ABIS/VTNXSoloStaking.json"; // Import ABI for Pool 3
 
 interface StakingPoolProps {
   poolAddress: string;
   poolName: string;
   description: string;
   isLocked: boolean;
+  isSoloStaking?: boolean; // Add a new prop to differentiate Pool 3
 }
 
-const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, description, isLocked }) => {
+const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, description, isLocked, isSoloStaking }) => {
   const address = useAddress();
-  const { contract: stakingContract } = useContract(poolAddress, VTNX_STAKING_ABI);
+  const { contract: stakingContract } = useContract(poolAddress, isSoloStaking ? VTNX_SOLO_STAKING_ABI : VTNX_STAKING_ABI);
   const { contract: tokenContract } = useContract(VTNX_TOKEN, VTNX_ABI);
   const { data: totalStaked } = useContractRead(stakingContract, "totalStaked");
   const { data: rewardsPerSecond } = useContractRead(stakingContract, "rewardsPerSecond");
@@ -55,8 +57,9 @@ const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, descri
   const { mutateAsync: approve } = useContractWrite(tokenContract, "approve");
   const { mutateAsync: depositTokens } = useContractWrite(stakingContract, "deposit");
   const { mutateAsync: withdrawTokens } = useContractWrite(stakingContract, "withdraw");
-  const { mutateAsync: withdrawRewards } = useContractWrite(stakingContract, "withdraw");
+  const { mutateAsync: withdrawRewards } = useContractWrite(stakingContract, isSoloStaking ? "claimRewards" : "withdraw");
   const { mutateAsync: emergencyWithdraw } = useContractWrite(stakingContract, "emergencyWithdraw");
+  const { mutateAsync: compoundRewards } = useContractWrite(stakingContract, isSoloStaking ? "compound" : undefined);
 
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -135,18 +138,21 @@ const StakingPool: React.FC<StakingPoolProps> = ({ poolAddress, poolName, descri
 
   const handleClaim = async () => {
     try {
-      await withdrawTokens({ args: [0] });
+      await withdrawRewards({ args: isSoloStaking ? [] : [0] });
       toast({ status: "success", title: "Claim Successful", description: "Your rewards have been claimed." });
     } catch (err) {
       handleError(err, "An error occurred while claiming rewards.");
     }
   };
 
-
   const handleCompound = async () => {
     try {
       if (pendingReward && pendingReward.gt(0)) {
-        await depositTokens({ args: [pendingReward] });
+        if (isSoloStaking) {
+          await compoundRewards({ args: [] });
+        } else {
+          await depositTokens({ args: [pendingReward] });
+        }
         toast({ status: "success", title: "Compound Successful", description: "Your rewards have been compounded." });
       } else {
         toast({ status: "info", title: "No Rewards", description: "You have no pending rewards to compound." });
